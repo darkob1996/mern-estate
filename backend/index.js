@@ -1,6 +1,7 @@
-import express from "express";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const userRouter = require("./routes/userRouter");
 
 dotenv.config({
   path: "./config.env",
@@ -8,18 +9,7 @@ dotenv.config({
 
 const app = express();
 
-const DB = process.env.DATABASE_URL.replace(
-  "<PASSWORD>",
-  process.env.DATABASE_PASSWORD
-);
+// ROUTES
+app.use("/api/user", userRouter);
 
-mongoose
-  .connect(DB)
-  .then(() => console.log("Connected to DB."))
-  .catch((err) => console.log(err));
-
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-  console.log("Listening on port 3000.");
-});
+module.exports = app;
