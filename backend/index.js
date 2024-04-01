@@ -7,7 +7,7 @@ const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./utils/appError");
 
 dotenv.config({
-  path: "./config.env",
+  path: "./backend/config.env",
 });
 
 const app = express();

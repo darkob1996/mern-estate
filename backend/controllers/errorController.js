@@ -42,12 +42,10 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
-    let error = { ...err };
+    if (err.name === "CastEror") err = handleCastErrorDB(err);
+    if (err.code === 11000) err = handleDuplicateFieldsDB(err);
 
-    if (err.name === "CastEror") error = handleCastErrorDB(error);
-    if (err.code === 11000) error = handleDuplicateFieldsDB(err);
-
-    sendErrorDev(error, res);
+    sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === "production") {
     sendErrorProd(err, res);
   }

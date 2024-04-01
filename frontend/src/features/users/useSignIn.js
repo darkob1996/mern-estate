@@ -1,23 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
-import { signup as signUpApi } from "../../services/apiUsers";
 import { useNavigate } from "react-router-dom";
 
-export const useSignUp = () => {
+import { signin as signInApi } from "../../services/apiUsers";
+
+export const useSignIn = () => {
   const navigate = useNavigate();
 
   const {
-    mutate: signup,
-    isLoading: isSigningUp,
+    mutate: signin,
+    isLoading: isSigningIn,
     error,
   } = useMutation({
-    mutationFn: signUpApi,
+    mutationFn: signInApi,
     onSuccess: (data) => {
-      toast.success("You have successfully signed up.");
+      toast.success("You have successfully signed in.");
 
       setTimeout(() => {
-        navigate("/sign-in");
+        navigate("/");
       }, 3000);
     },
     onError: (err) => {
@@ -25,5 +25,5 @@ export const useSignUp = () => {
     },
   });
 
-  return { signup, isSigningUp, error };
+  return { signin, isSigningIn, error };
 };
