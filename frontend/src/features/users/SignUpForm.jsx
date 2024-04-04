@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useSignUp } from "./useSignup";
+import OAuth from "../../ui/OAuth";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({});
@@ -85,6 +86,8 @@ export default function SignUpForm() {
       >
         Sign up
       </button>
+
+      <OAuth />
     </form>
   );
 }

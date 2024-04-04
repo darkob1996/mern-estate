@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { signInFailure, signInStart, signInSuccess } from "./userSlice";
 
 import { useSignIn } from "./useSignIn";
+import OAuth from "../../ui/OAuth";
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({
@@ -82,6 +83,8 @@ export default function SignInForm() {
       >
         Sign in
       </button>
+
+      <OAuth />
     </form>
   );
 }
