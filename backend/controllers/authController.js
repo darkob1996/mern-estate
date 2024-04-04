@@ -12,6 +12,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     password,
   });
 
+  newUser.password = undefined;
+
   res.status(201).json({
     status: "success",
     data: newUser,
@@ -21,7 +23,9 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.signin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email })
+    .select("+password")
+    .select("-__v -_id");
 
   // 1. Check if user exists
   if (!user) {
@@ -36,7 +40,7 @@ exports.signin = catchAsync(async (req, res, next) => {
   // 3. Create JWT for the signed in user
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-  const { password: pass, ...otherInfo } = user._doc;
+  user.password = undefined;
 
   res
     .cookie("access_token", token, { httpOnly: true, expiresIn: 60 })
@@ -44,7 +48,7 @@ exports.signin = catchAsync(async (req, res, next) => {
     .json({
       status: "success",
       data: {
-        user: otherInfo,
+        user: user,
       },
     });
 });

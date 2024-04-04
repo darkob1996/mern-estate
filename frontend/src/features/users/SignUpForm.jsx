@@ -1,11 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useSignUp } from "./useSignup";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState({});
+  const navigate = useNavigate();
 
-  const { signup, isSigningUp } = useSignUp();
+  // const { signup, isSigningUp } = useSignUp();
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -17,7 +22,34 @@ export default function SignUpForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    signup(formData);
+    try {
+      setIsLoading(true);
+
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        setError(data.message);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(false);
+      setError(null);
+      navigate("/sign-in");
+
+      // signup(formData);
+    } catch (err) {
+      setError(data.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -47,7 +79,7 @@ export default function SignUpForm() {
       />
 
       <button
-        disabled={isSigningUp}
+        // disabled={isSigningUp}
         type="submit"
         className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
       >

@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signInFailure, signInStart, signInSuccess } from "./userSlice";
 
 import { useSignIn } from "./useSignIn";
 
@@ -7,10 +10,11 @@ export default function SignInForm() {
     email: "",
     password: "",
   });
+  const { loading } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  console.log(formData);
-
-  const { signin, isSigningIn, error } = useSignIn();
+  // const { signin, isSigningIn, error } = useSignIn();
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -22,11 +26,33 @@ export default function SignInForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    signin(formData, {
-      onSettled: () => {
-        setFormData({ email: "", password: "" });
-      },
-    });
+    try {
+      dispatch(signInStart());
+
+      const res = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.status === "fail") {
+        throw new Error(data.message);
+      }
+
+      dispatch(signInSuccess(data.data.user));
+    } catch (err) {
+      dispatch(signInFailure(err.message));
+    }
+
+    // signin(formData, {
+    //   onSettled: () => {
+    //     setFormData({ email: "", password: "" });
+    //   },
+    // });
   };
 
   return (
@@ -50,7 +76,7 @@ export default function SignInForm() {
       />
 
       <button
-        disabled={isSigningIn}
+        disabled={loading}
         type="submit"
         className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
       >
